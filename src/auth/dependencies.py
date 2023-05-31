@@ -1,41 +1,32 @@
-from datetime import datetime
-from fastapi import Cookie, Depends
+from fastapi import Depends
 
-from src.auth import service
-from src.auth.exceptions import EmailTaken, RefreshTokenNotValid
-from src.auth.models import Token, User
-from src.auth.schemas import AuthUser
-
-
-async def valid_user_create(user: AuthUser) -> AuthUser:
-    if await service.get_user_by_email(user.email):
-        raise EmailTaken()
-
-    return user
+from src.auth.jwt import oauth2_scheme
+from src.database import AsyncDbSession
+from src.auth import service, tokens
+from src.auth.exceptions import RefreshTokenNotValid, UsernameTaken, AccessTokenNotValid
+from src.auth.schemas import RefreshToken, UserCreate
 
 
-async def valid_refresh_token(
-    refresh_token: str = Cookie(..., alias="refreshToken"),
-) -> Token:
-    db_refresh_token = await service.get_refresh_token(refresh_token)
-    if not db_refresh_token:
+async def valid_refresh_token(session: AsyncDbSession, token: RefreshToken) -> tokens.RefreshToken:
+    token = tokens.RefreshToken(token=token.refresh_token)
+
+    if not await token.in_whitelist(session):
         raise RefreshTokenNotValid()
 
-    if not _is_valid_refresh_token(db_refresh_token):
-        raise RefreshTokenNotValid()
-
-    return db_refresh_token
+    return token
 
 
-async def valid_refresh_token_user(
-    refresh_token: Token = Depends(valid_refresh_token),
-) -> User:
-    user = await service.get_user_by_id(refresh_token.user_id)
-    if not user:
-        raise RefreshTokenNotValid()
+async def valid_access_token(session: AsyncDbSession, token: str = Depends(oauth2_scheme)) -> tokens.AccessToken:
+    token = tokens.AccessToken(token=token)
 
-    return user
+    if not await token.in_whitelist(session):
+        raise AccessTokenNotValid()
+
+    return token
 
 
-def _is_valid_refresh_token(db_refresh_token: Token) -> bool:
-    return datetime.utcnow() <= db_refresh_token.expires_at
+async def valid_user_create(session: AsyncDbSession, user_in: UserCreate) -> UserCreate:
+    if await service.get_user_by_username(session, user_in.username):
+        raise UsernameTaken()
+
+    return user_in

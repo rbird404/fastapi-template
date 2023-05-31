@@ -26,9 +26,6 @@ class Config(BaseSettings):
 
         return data
 
-    class Config:
-        env_file = ".env"
-
 
 settings = Config()
 

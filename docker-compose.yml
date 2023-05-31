@@ -2,31 +2,25 @@ version: '3.7'
 
 services:
   app:
-    container_name: app
-    image: app_image
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: Dockerfile
+    restart: always
+    build: ./
     volumes:
       - ./:/src
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     depends_on:
-      - app_db
+      - db
 
-  app_db:
-    container_name: app_db
-    hostname: app_db
-    image: library/postgres:14.1
+  db:
+    image: postgres:14
+    volumes:
+      - pg_data:/var/lib/postgresql/data
     env_file:
       - .env
-    volumes:
-      - app_pg_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
 volumes:
-  app_pg_data:
-    driver: "local"
+  pg_data:

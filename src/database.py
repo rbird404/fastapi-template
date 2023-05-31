@@ -1,14 +1,14 @@
-from sqlalchemy import DateTime
-from sqlalchemy.orm import mapped_column, DeclarativeBase
-from sqlalchemy.sql import func
+from typing import Annotated
+from fastapi import Depends
+
+from sqlalchemy.orm import mapped_column, DeclarativeBase, Mapped
 from sqlalchemy.ext.asyncio import (
-    async_sessionmaker, create_async_engine
+    async_sessionmaker, create_async_engine, AsyncSession
 )
-from functools import wraps
 
 from src.config import settings
 
-__all__ = ("session", "Base", "DATABASE_URL")
+__all__ = ("Base", "DATABASE_URL", "AsyncDbSession")
 
 DATABASE_URL = settings.DATABASE_URL
 
@@ -23,17 +23,18 @@ async_session = async_sessionmaker(
 )
 
 
-def session(func):
-    @wraps(func)
-    async def wrapper(*args, **kwargs):
-        async with async_session() as session:
-            try:
-                return await func(*args, **kwargs, session=session)
-            finally:
-                await session.commit()
-    return wrapper
+async def get_async_session() -> AsyncSession:
+    async with async_session() as session:
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+        finally:
+            await session.close()
+
+
+AsyncDbSession = Annotated[AsyncSession, Depends(get_async_session)]
 
 
 class Base(DeclarativeBase):
-    created_at = mapped_column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = mapped_column(DateTime, server_onupdate=func.now())
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement="auto")
