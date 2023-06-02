@@ -6,8 +6,7 @@ and [@djangorestframework-simplejwt](https://github.com/jazzband/djangorestframe
 
 ### First Build Only
 1. `cp .env.example .env`
-2. `docker network create app_main`
-3. `docker-compose up -d --build`
+2. `docker-compose up -d --build`
 
 ### Linters
 Format the code
