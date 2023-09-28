@@ -16,12 +16,12 @@ async def register_user(
         user_in: UserCreate = Depends(valid_user_create),
 ):
     user = await service.create_user(session, user_in)
-    return UserRead.from_orm(user)
+    return UserRead.model_validate(user)
 
 
 @router.get("/users/me", response_model=UserRead)
 async def get_me(current_user: CurrentUser):
-    return UserRead.from_orm(current_user)
+    return UserRead.model_validate(current_user)
 
 
 @router.post("/token", response_model=TokenPair)

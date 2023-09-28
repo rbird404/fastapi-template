@@ -1,16 +1,17 @@
 import re
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 
-from src.models import ORJSONModel
+from src.schemas import BaseSchema
 
 STRONG_PASSWORD_PATTERN = re.compile(r"^(?=.*[\d])(?=.*[!@#$%^&*])[\w!@#$%^&*]{6,128}$")
 
 
-class AuthUser(ORJSONModel):
+class AuthUser(BaseSchema):
     username: str
     password: str = Field(min_length=6, max_length=128)
 
-    @validator("password")
+    @field_validator("password", mode="after")
+    @classmethod
     def valid_password(cls, password: str) -> str:
         if not re.match(STRONG_PASSWORD_PATTERN, password):
             raise ValueError(
@@ -28,15 +29,15 @@ class UserCreate(AuthUser):
     password: str
 
 
-class UserRead(ORJSONModel):
+class UserRead(BaseSchema):
     id: int
     username: str
 
 
-class TokenPair(ORJSONModel):
+class TokenPair(BaseSchema):
     access_token: str
     refresh_token: str
 
 
-class RefreshToken(ORJSONModel):
+class RefreshToken(BaseSchema):
     refresh_token: str

@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from src.auth.config import auth_config
 from src.auth.exceptions import InvalidToken
-from src.models import ORJSONModel
+from src.schemas import BaseSchema
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
 
@@ -24,7 +24,7 @@ def decode(token: str, verify=True) -> dict:
     return jwt.get_unverified_claims(token)
 
 
-class JWTPayload(ORJSONModel):
+class JWTPayload(BaseSchema):
     sub: str
     jti: uuid.UUID
     iat: datetime

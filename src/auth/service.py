@@ -14,7 +14,7 @@ from src.database import AsyncDbSession
 
 
 async def create_user(session: AsyncSession, user_in: UserCreate, ) -> User | None:
-    user = User(**user_in.dict())
+    user = User(**user_in.model_dump())
     user.password = hash_password(user_in.password)
     session.add(user)
     await session.commit()
