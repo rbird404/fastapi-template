@@ -8,6 +8,20 @@ and [@djangorestframework-simplejwt](https://github.com/jazzband/djangorestframe
 1. `cp .env.example .env`
 2. `docker-compose up -d --build`
 
+
+### Database
+
+Create DB
+
+```shell
+docker compose exec -it db bash
+```
+```shell
+psql -h localhost -U postgres
+```
+```sql
+CREATE database fastapi_template_db;
+```
 ### Linters
 Format the code
 ```shell
