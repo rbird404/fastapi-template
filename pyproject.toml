@@ -10,7 +10,6 @@ fastapi = "0.103.2"
 SQLAlchemy = "^2.0.13"
 pydantic = {version = "2.4.2", extras = ["email"]}
 uvicorn = "0.23.2"
-sentry-sdk = "^1.23.1"
 python-jose = "^3.3.0"
 alembic = "^1.11.0"
 asyncpg = "0.28.0"

@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from src.auth.config import auth_config
 from src.auth.exceptions import InvalidToken
-from src.schemas import BaseSchema
+from pydantic import BaseModel
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
 
@@ -24,7 +24,7 @@ def decode(token: str, verify=True) -> dict:
     return jwt.get_unverified_claims(token)
 
 
-class JWTPayload(BaseSchema):
+class JWTPayload(BaseModel):
     sub: str
     jti: uuid.UUID
     iat: datetime

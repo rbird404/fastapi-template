@@ -10,7 +10,7 @@ from src.config import settings
 
 __all__ = ("Base", "DATABASE_URL", "AsyncDbSession")
 
-DATABASE_URL = settings.DATABASE_URL
+DATABASE_URL = str(settings.DATABASE_URL)
 
 engine = create_async_engine(
     DATABASE_URL,

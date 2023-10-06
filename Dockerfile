@@ -8,15 +8,19 @@ ENV POETRY_VERSION=1.5
 RUN apt-get update && apt-get install -y vim && apt-get upgrade -y
 RUN pip install --upgrade pip "poetry==$POETRY_VERSION"
 
-COPY . ./app
-ENV PATH "$PATH:/app/scripts"
-
 COPY ./pyproject.toml /pyproject.toml
 COPY ./poetry.lock /poetry.lock
 
 RUN poetry config virtualenvs.create false
 RUN poetry install --only main
 
-WORKDIR /app
+COPY . ./src
+ENV PATH "$PATH:/app/scripts"
+
+RUN useradd -m -d /src -s /bin/bash app \
+    && chown -R app:app /src/* && chmod +x /src/scripts/*
+
+WORKDIR /src
+USER app
 
 CMD ["./scripts/start-dev.sh"]

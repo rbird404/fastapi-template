@@ -1,12 +1,12 @@
 from typing import Any
-from pydantic import model_validator
+from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings
 
 from src.constants import Environment
 
 
 class Config(BaseSettings):
-    DATABASE_URL: str # TODO Change to postgres url
+    DATABASE_URL: PostgresDsn
 
     SITE_DOMAIN: str = "myapp.com"
 
@@ -19,13 +19,6 @@ class Config(BaseSettings):
     CORS_HEADERS: list[str]
 
     APP_VERSION: str = "1"
-
-    @model_validator(mode="after")
-    def validate_sentry_non_local(self) -> "Config":
-        if self.ENVIRONMENT.is_deployed and not self.SENTRY_DSN:
-            raise ValueError("Sentry is not set")
-
-        return self
 
 
 settings = Config()

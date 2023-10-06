@@ -1,34 +1,33 @@
-from src.auth.constants import ErrorCode
 from src.exceptions import BadRequest, NotAuthenticated, PermissionDenied
 
 
 class AuthRequired(NotAuthenticated):
-    DETAIL = ErrorCode.AUTHENTICATION_REQUIRED
+    DETAIL = "Authentication required."
 
 
 class AuthorizationFailed(PermissionDenied):
-    DETAIL = ErrorCode.AUTHORIZATION_FAILED
+    DETAIL = "Authorization failed. User has no access."
 
 
 class InvalidToken(NotAuthenticated):
-    DETAIL = ErrorCode.INVALID_TOKEN
+    DETAIL = "Invalid token."
 
 
 class InvalidCredentials(NotAuthenticated):
-    DETAIL = ErrorCode.INVALID_CREDENTIALS
+    DETAIL = "Invalid credentials."
 
 
 class EmailTaken(BadRequest):
-    DETAIL = ErrorCode.EMAIL_TAKEN
+    DETAIL = "Email is already taken."
 
 
 class UsernameTaken(BadRequest):
-    DETAIL = ErrorCode.USERNAME_TAKEN
+    DETAIL = "Username is already taken."
 
 
 class RefreshTokenNotValid(NotAuthenticated):
-    DETAIL = ErrorCode.REFRESH_TOKEN_NOT_VALID
+    DETAIL = "Refresh token is not valid."
 
 
 class AccessTokenNotValid(NotAuthenticated):
-    DETAIL = ErrorCode.ACCESS_TOKEN_NOT_VALID
+    DETAIL = "Access token is not valid."

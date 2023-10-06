@@ -1,8 +1,7 @@
 import pytest
 from async_asgi_testclient import TestClient
 from fastapi import status
-
-from src.auth.constants import ErrorCode
+from src.auth.exceptions import UsernameTaken
 
 
 @pytest.mark.asyncio
@@ -39,7 +38,7 @@ async def test_register_username_taken(client: TestClient, monkeypatch: pytest.M
     resp_json = resp.json()
 
     assert resp.status_code == status.HTTP_400_BAD_REQUEST
-    assert resp_json["detail"] == ErrorCode.USERNAME_TAKEN
+    assert resp_json["detail"] == UsernameTaken.DETAIL
 
 
 @pytest.mark.asyncio

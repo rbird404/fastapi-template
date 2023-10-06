@@ -1,43 +1,27 @@
-import re
-from pydantic import Field, field_validator
-
-from src.schemas import BaseSchema
-
-STRONG_PASSWORD_PATTERN = re.compile(r"^(?=.*[\d])(?=.*[!@#$%^&*])[\w!@#$%^&*]{6,128}$")
+from pydantic import Field, ConfigDict
+from pydantic import BaseModel
 
 
-class AuthUser(BaseSchema):
+class AuthUser(BaseModel):
     username: str
     password: str = Field(min_length=6, max_length=128)
 
-    @field_validator("password", mode="after")
-    @classmethod
-    def valid_password(cls, password: str) -> str:
-        if not re.match(STRONG_PASSWORD_PATTERN, password):
-            raise ValueError(
-                "Password must contain at least "
-                "one lower character, "
-                "one upper character, "
-                "digit or "
-                "special symbol"
-            )
-        return password
-
 
 class UserCreate(AuthUser):
-    username: str
-    password: str
+    model_config = ConfigDict(from_attributes=True)
 
 
-class UserRead(BaseSchema):
+class UserRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     username: str
 
 
-class TokenPair(BaseSchema):
+class TokenPair(BaseModel):
     access_token: str
     refresh_token: str
 
 
-class RefreshToken(BaseSchema):
+class RefreshToken(BaseModel):
     refresh_token: str
