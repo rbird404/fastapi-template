@@ -1,13 +1,13 @@
 import uuid
 from jose import jwt, JWTError
 from datetime import datetime
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer
 
 from src.auth.config import auth_config
 from src.auth.exceptions import InvalidToken
 from pydantic import BaseModel
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
+bearer_token = HTTPBearer()
 
 
 def encode(payload: dict) -> str:

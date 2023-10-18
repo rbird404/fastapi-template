@@ -1,11 +1,12 @@
 from typing import Annotated, Type
 
 from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.exceptions import InvalidCredentials, AuthorizationFailed, InvalidToken
-from src.auth.jwt import oauth2_scheme
+from src.auth.jwt import bearer_token
 from src.auth.schemas import UserCreate, AuthUser
 from src.auth.security import check_password, hash_password
 from src.auth.models import User
@@ -67,9 +68,9 @@ async def authenticate_user(session: AsyncSession, auth_data: AuthUser) -> User:
 
 
 async def get_current_user(
-        session: AsyncDbSession, token: str = Depends(oauth2_scheme),
+        session: AsyncDbSession, token: HTTPAuthorizationCredentials = Depends(bearer_token),
 ) -> User:
-    token = AccessToken(token=token)
+    token = AccessToken(token=token.credentials)
     if not await token.in_whitelist(session):
         raise InvalidToken()
 

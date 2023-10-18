@@ -1,6 +1,7 @@
 from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials
 
-from src.auth.jwt import oauth2_scheme
+from src.auth.jwt import bearer_token
 from src.database import AsyncDbSession
 from src.auth import service, tokens
 from src.auth.exceptions import RefreshTokenNotValid, UsernameTaken, AccessTokenNotValid
@@ -16,8 +17,10 @@ async def valid_refresh_token(session: AsyncDbSession, token: RefreshToken) -> t
     return token
 
 
-async def valid_access_token(session: AsyncDbSession, token: str = Depends(oauth2_scheme)) -> tokens.AccessToken:
-    token = tokens.AccessToken(token=token)
+async def valid_access_token(
+        session: AsyncDbSession, token: HTTPAuthorizationCredentials = Depends(bearer_token)
+) -> tokens.AccessToken:
+    token = tokens.AccessToken(token=token.credentials)
 
     if not await token.in_whitelist(session):
         raise AccessTokenNotValid()
