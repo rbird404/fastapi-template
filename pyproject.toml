@@ -21,6 +21,7 @@ pytest-asyncio = "^0.21.0"
 pydantic-settings = "2.0.3"
 redis = "^5.0.1"
 gunicorn = "^21.2.0"
+celery = "^5.3.4"
 
 [tool.poetry.dev-dependencies]
 

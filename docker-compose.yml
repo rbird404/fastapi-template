@@ -3,7 +3,8 @@ version: '3.7'
 services:
   app:
     restart: always
-    build: ./
+    build:
+      dockerfile: fastapi.dockerfile
     volumes:
       - ./:/src
     env_file:
@@ -26,6 +27,17 @@ services:
     image: redis:7
     ports:
       - "6379:6379"
+
+  worker:
+    build:
+      dockerfile: ./celery.dockerfile
+    command: celery -A src.celery:app worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - app
+      - redis
+      - db
 
 volumes:
   pg_data:
