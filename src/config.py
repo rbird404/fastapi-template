@@ -1,5 +1,5 @@
 from typing import Any
-from pydantic import PostgresDsn
+from pydantic import PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings
 
 from src.constants import Environment
@@ -7,6 +7,7 @@ from src.constants import Environment
 
 class Config(BaseSettings):
     DATABASE_URL: PostgresDsn
+    REDIS_URL: RedisDsn
 
     SITE_DOMAIN: str = "myapp.com"
 

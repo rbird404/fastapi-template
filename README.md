@@ -9,19 +9,6 @@ and [@djangorestframework-simplejwt](https://github.com/jazzband/djangorestframe
 2. `docker-compose up -d --build`
 
 
-### Database
-
-Create DB
-
-```shell
-docker compose exec -it db bash
-```
-```shell
-psql -h localhost -U postgres
-```
-```sql
-CREATE database fastapi_template_db;
-```
 ### Linters
 Format the code
 ```shell
@@ -41,6 +28,7 @@ docker compose exec app migrate
 ```shell
 docker compose exec app downgrade -1  # or -2 or base or hash of the migration
 ```
+
 ### Tests
 All tests are integrational and require DB connection. 
 
@@ -52,3 +40,4 @@ Run tests
 ```shell
 docker compose exec app pytest
 ```
+

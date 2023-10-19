@@ -6,7 +6,7 @@ authors = ["Timur"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "0.103.2"
+fastapi = "0.104.0"
 SQLAlchemy = "^2.0.13"
 pydantic = {version = "2.4.2", extras = ["email"]}
 uvicorn = "0.23.2"
@@ -19,6 +19,7 @@ pytest = "^7.3.1"
 async-asgi-testclient = "^1.4.11"
 pytest-asyncio = "^0.21.0"
 pydantic-settings = "2.0.3"
+redis = "^5.0.1"
 
 [tool.poetry.dev-dependencies]
 
