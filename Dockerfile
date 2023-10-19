@@ -15,7 +15,7 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --only main
 
 COPY . ./src
-ENV PATH "$PATH:/app/scripts"
+ENV PATH "$PATH:/src/scripts"
 
 RUN useradd -m -d /src -s /bin/bash app \
     && chown -R app:app /src/* && chmod +x /src/scripts/*
@@ -23,4 +23,4 @@ RUN useradd -m -d /src -s /bin/bash app \
 WORKDIR /src
 USER app
 
-CMD ["./scripts/start-dev.sh"]
+ENTRYPOINT ["sh", "./scripts/start-dev.sh"]
