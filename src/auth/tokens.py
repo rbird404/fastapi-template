@@ -79,7 +79,6 @@ class Token:
             expires_at=self.payload['exp'],
         )
         session.add(token)
-        await session.commit()
         return token
 
     async def remove_from_whitelist(self, session: AsyncSession) -> None:
@@ -88,7 +87,6 @@ class Token:
                 WhitelistedToken.jti == self.payload['jti']  # type:ignore
             )
         )
-        await session.commit()
 
 
 class AccessToken(Token):

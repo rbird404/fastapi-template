@@ -18,7 +18,6 @@ async def create_user(session: AsyncSession, user_in: UserCreate, ) -> User | No
     user = User(**user_in.model_dump())
     user.password = hash_password(user_in.password)
     session.add(user)
-    await session.commit()
     return user
 
 

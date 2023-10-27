@@ -38,6 +38,7 @@ async def token_obtain_pair(
     refresh_token = await service.create_token(
         session, token_class=tokens.RefreshToken, user=user
     )
+    await session.commit()
     return TokenPair(access_token=access_token, refresh_token=refresh_token)
 
 
@@ -55,6 +56,7 @@ async def refresh_tokens(
     refresh_token = await service.create_token(
         session, token_class=tokens.RefreshToken, user=user
     )
+    await session.commit()
     return TokenPair(access_token=access_token, refresh_token=refresh_token)
 
 
@@ -73,3 +75,4 @@ async def logout(
 
     await refresh_token.remove_from_whitelist(session)
     await access_token.remove_from_whitelist(session)
+    await session.commit()
