@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 
 from src.auth import service, tokens
-from src.auth.dependencies import valid_user_create, valid_refresh_token, valid_access_token
+from src.auth import validators
 from src.auth.exceptions import InvalidToken
 from src.auth.schemas import UserRead, UserCreate, TokenPair, AuthUser, RefreshToken
 from src.auth.service import CurrentUser
@@ -13,9 +13,10 @@ router = APIRouter()
 @router.post("/users", status_code=status.HTTP_201_CREATED, response_model=UserRead)
 async def register_user(
         session: AsyncDbSession,
-        user_in: UserCreate = Depends(valid_user_create),
+        user_in: UserCreate = Depends(validators.valid_user_create),
 ):
     user = await service.create_user(session, user_in)
+    await session.commit()
     return UserRead.model_validate(user)
 
 
@@ -43,7 +44,7 @@ async def token_obtain_pair(
 @router.post("/token/refresh", response_model=TokenPair)
 async def refresh_tokens(
         session: AsyncDbSession,
-        token: tokens.RefreshToken = Depends(valid_refresh_token)
+        token: tokens.RefreshToken = Depends(validators.valid_refresh_token)
 ):
     user = await service.get_user_from_token(session, token)
     await token.remove_from_whitelist(session)
@@ -61,7 +62,7 @@ async def refresh_tokens(
 async def logout(
         session: AsyncDbSession,
         refresh_token: RefreshToken,
-        access_token: tokens.AccessToken = Depends(valid_access_token),
+        access_token: tokens.AccessToken = Depends(validators.valid_access_token),
 ):
     refresh_token = tokens.RefreshToken(token=refresh_token.refresh_token)
     if not await refresh_token.in_whitelist(session):

@@ -1,18 +1,22 @@
 version: '3.7'
+name: hackathon
 
 services:
   app:
     restart: always
     build:
-      dockerfile: fastapi.dockerfile
+      dockerfile: app.dockerfile
     volumes:
       - ./:/src
+      - static:/src/static:mode=777
     env_file:
       - .env
     ports:
       - "8000:8000"
     depends_on:
       - db
+    networks:
+      my-ms:
 
   db:
     image: postgres:14
@@ -22,22 +26,13 @@ services:
       - .env
     ports:
       - "5432:5432"
-
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
-
-  worker:
-    build:
-      dockerfile: ./celery.dockerfile
-    command: celery -A src.celery:app worker --loglevel=info
-    env_file:
-      - .env
-    depends_on:
-      - app
-      - redis
-      - db
+    networks:
+      my-ms:
 
 volumes:
   pg_data:
+  static:
+
+networks:
+  my-ms:
+    driver: bridge

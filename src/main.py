@@ -4,10 +4,11 @@ from typing import AsyncGenerator
 import redis.asyncio as aioredis
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from src import redis
 from src.auth.router import router as auth_router
-from src.config import app_configs, settings
+from src.config import app_configs, settings, STATIC_DIR
 
 
 @asynccontextmanager
@@ -44,3 +45,5 @@ async def healthcheck() -> dict[str, str]:
 
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

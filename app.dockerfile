@@ -20,6 +20,9 @@ ENV PATH "$PATH:/src/scripts"
 RUN useradd -m -d /src -s /bin/bash app \
     && chown -R app:app /src/* && chmod +x /src/scripts/*
 
+RUN mkdir -p /src/static
+RUN chmod 777 -R /src/static
+
 WORKDIR /src
 USER app
 

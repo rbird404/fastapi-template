@@ -1,5 +1,4 @@
 from typing import Annotated
-
 from pydantic import BeforeValidator
 import datetime
 
