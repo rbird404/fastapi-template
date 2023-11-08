@@ -17,12 +17,12 @@ async def register_user(
 ):
     user = await service.create_user(session, user_in)
     await session.commit()
-    return UserRead.model_validate(user)
+    return user
 
 
 @router.get("/users/me", response_model=UserRead)
 async def get_me(current_user: CurrentUser):
-    return UserRead.model_validate(current_user)
+    return current_user
 
 
 @router.post("/token", response_model=TokenPair)
@@ -39,7 +39,7 @@ async def token_obtain_pair(
         session, token_class=tokens.RefreshToken, user=user
     )
     await session.commit()
-    return TokenPair(access_token=access_token, refresh_token=refresh_token)
+    return {"access_token": access_token, "refresh_token": refresh_token}
 
 
 @router.post("/token/refresh", response_model=TokenPair)
@@ -57,7 +57,7 @@ async def refresh_tokens(
         session, token_class=tokens.RefreshToken, user=user
     )
     await session.commit()
-    return TokenPair(access_token=access_token, refresh_token=refresh_token)
+    return {"access_token": access_token, "refresh_token": refresh_token}
 
 
 @router.post("/token/logout")
