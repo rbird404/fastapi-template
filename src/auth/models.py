@@ -24,6 +24,6 @@ class User(Base):
 class WhitelistedToken(Base):
     __tablename__ = 'whitelisted_tokens'
 
-    jti = mapped_column(UUID, unique=True)
+    jti = mapped_column(UUID, primary_key=True)
     user_id = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     expires_at = mapped_column(DateTime, nullable=False)
