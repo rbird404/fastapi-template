@@ -6,11 +6,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.exceptions import InvalidCredentials, AuthorizationFailed, InvalidToken
-from src.auth.jwt import bearer_token
 from src.auth.schemas import UserCreate, AuthUser
 from src.auth.security import check_password, hash_password
 from src.auth.models import User
-from src.auth.tokens import Token, AccessToken
+from src.auth.jwt import Token, AccessToken, bearer_token
 from src.database import AsyncDbSession
 
 

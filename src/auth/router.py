@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
-from src.auth import service, tokens
+from src.auth import service, jwt
 from src.auth import validators
 from src.auth.exceptions import InvalidToken
 from src.auth.schemas import UserRead, UserCreate, TokenPair, AuthUser, RefreshToken
@@ -33,10 +33,10 @@ async def token_obtain_pair(
     user = await service.authenticate_user(session, auth_data)
 
     access_token = await service.create_token(
-        session, token_class=tokens.AccessToken, user=user
+        session, token_class=jwt.AccessToken, user=user
     )
     refresh_token = await service.create_token(
-        session, token_class=tokens.RefreshToken, user=user
+        session, token_class=jwt.RefreshToken, user=user
     )
     await session.commit()
     return {"access_token": access_token, "refresh_token": refresh_token}
@@ -45,16 +45,16 @@ async def token_obtain_pair(
 @router.post("/token/refresh", response_model=TokenPair)
 async def refresh_tokens(
         session: AsyncDbSession,
-        token: tokens.RefreshToken = Depends(validators.valid_refresh_token)
+        token: jwt.RefreshToken = Depends(validators.valid_refresh_token)
 ):
     user = await service.get_user_from_token(session, token)
     await token.remove_from_whitelist(session)
 
     access_token = await service.create_token(
-        session, token_class=tokens.AccessToken, user=user
+        session, token_class=jwt.AccessToken, user=user
     )
     refresh_token = await service.create_token(
-        session, token_class=tokens.RefreshToken, user=user
+        session, token_class=jwt.RefreshToken, user=user
     )
     await session.commit()
     return {"access_token": access_token, "refresh_token": refresh_token}
@@ -64,9 +64,9 @@ async def refresh_tokens(
 async def logout(
         session: AsyncDbSession,
         refresh_token: RefreshToken,
-        access_token: tokens.AccessToken = Depends(validators.valid_access_token),
+        access_token: jwt.AccessToken = Depends(validators.valid_access_token),
 ):
-    refresh_token = tokens.RefreshToken(token=refresh_token.refresh_token)
+    refresh_token = jwt.RefreshToken(token=refresh_token.refresh_token)
     if not await refresh_token.in_whitelist(session):
         raise InvalidToken()
 
