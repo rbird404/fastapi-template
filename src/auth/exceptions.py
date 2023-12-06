@@ -19,7 +19,3 @@ class InvalidCredentials(NotAuthenticated):
 
 class RefreshTokenNotValid(NotAuthenticated):
     DETAIL = "Refresh token is not valid."
-
-
-class AccessTokenNotValid(NotAuthenticated):
-    DETAIL = "Access token is not valid."

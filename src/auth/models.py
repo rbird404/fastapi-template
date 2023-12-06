@@ -8,8 +8,8 @@ from sqlalchemy import (
 from src.database import Base
 
 
-class WhitelistedToken(Base):
-    __tablename__ = 'whitelisted_tokens'
+class BlacklistedToken(Base):
+    __tablename__ = 'blacklisted_tokens'
 
     jti = mapped_column(UUID, primary_key=True)
     user_id = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))

@@ -15,14 +15,8 @@ async def token_obtain_pair(
         auth_data: AuthUser
 ):
     user = await service.authenticate_user(session, auth_data)
-
-    access_token = await service.create_token(
-        session, token_class=jwt.AccessToken, user=user
-    )
-    refresh_token = await service.create_token(
-        session, token_class=jwt.RefreshToken, user=user
-    )
-    await session.commit()
+    access_token = service.create_token(token_class=jwt.AccessToken, user=user)
+    refresh_token = service.create_token(token_class=jwt.RefreshToken, user=user)
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 
@@ -32,15 +26,16 @@ async def refresh_tokens(
         token: jwt.RefreshToken = Depends(validators.valid_refresh_token)
 ):
     user = await service.get_user_from_token(session, token)
-    await service.remove_from_whitelist(session, token)
-
-    access_token = await service.create_token(
-        session, token_class=jwt.AccessToken, user=user
-    )
-    refresh_token = await service.create_token(
-        session, token_class=jwt.RefreshToken, user=user
-    )
+    await service.add_to_blacklist(session, token)
     await session.commit()
+
+    access_token = service.create_token(
+        token_class=jwt.AccessToken, user=user
+    )
+    refresh_token = service.create_token(
+        token_class=jwt.RefreshToken, user=user
+    )
+
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 
@@ -48,15 +43,10 @@ async def refresh_tokens(
 async def logout(
         session: AsyncDbSession,
         refresh_token: RefreshToken,
-        access_token: jwt.AccessToken = Depends(validators.valid_access_token),
 ):
     refresh_token = jwt.RefreshToken(token=refresh_token.refresh_token)
-    if not await service.in_whitelist(session, refresh_token):
+    if await service.in_blacklist(session, refresh_token):
         raise InvalidToken()
 
-    if refresh_token["sub"] != access_token["sub"]:
-        raise InvalidToken()
-
-    await service.remove_from_whitelist(session, refresh_token)
-    await service.remove_from_whitelist(session, access_token)
+    await service.add_to_blacklist(session, refresh_token)
     await session.commit()
