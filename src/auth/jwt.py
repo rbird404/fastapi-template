@@ -2,14 +2,13 @@ import uuid
 from datetime import datetime, timedelta
 
 from jose import jwt, JWTError
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 from fastapi.security import HTTPBearer
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
 
-from src.auth.models import WhitelistedToken, User
 from src.auth.config import auth_config
 from src.auth.exceptions import InvalidToken
+from src.auth.schemas import JWTPayload
+from src.users.models import User
 
 bearer_token = HTTPBearer()
 
@@ -26,14 +25,6 @@ def decode(token: str, verify=True) -> dict:
             raise InvalidToken()
 
     return jwt.get_unverified_claims(token)
-
-
-class JWTPayload(BaseModel):
-    sub: str
-    jti: uuid.UUID
-    iat: datetime
-    exp: datetime
-    token_type: str | None
 
 
 class Token:
@@ -88,30 +79,6 @@ class Token:
         token = cls()
         token["sub"] = str(user.id)
         return token
-
-    async def in_whitelist(self, session: AsyncSession) -> bool:
-        token = await session.scalar(
-            select(WhitelistedToken).where(
-                WhitelistedToken.jti == self.payload["jti"]  # type:ignore
-            )
-        )
-        return bool(token)
-
-    async def add_to_whitelist(self, session: AsyncSession) -> WhitelistedToken:
-        token = WhitelistedToken(
-            jti=self.payload['jti'],
-            user_id=int(self.payload['sub']),
-            expires_at=self.payload['exp'],
-        )
-        session.add(token)
-        return token
-
-    async def remove_from_whitelist(self, session: AsyncSession) -> None:
-        await session.execute(
-            delete(WhitelistedToken).where(
-                WhitelistedToken.jti == self.payload['jti']  # type:ignore
-            )
-        )
 
 
 class AccessToken(Token):

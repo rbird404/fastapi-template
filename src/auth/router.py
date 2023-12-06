@@ -1,28 +1,12 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 
 from src.auth import service, jwt
 from src.auth import validators
 from src.auth.exceptions import InvalidToken
-from src.auth.schemas import UserRead, UserCreate, TokenPair, AuthUser, RefreshToken
-from src.auth.service import CurrentUser
+from src.auth.schemas import TokenPair, AuthUser, RefreshToken
 from src.database import AsyncDbSession
 
 router = APIRouter()
-
-
-@router.post("/users", status_code=status.HTTP_201_CREATED, response_model=UserRead)
-async def register_user(
-        session: AsyncDbSession,
-        user_in: UserCreate = Depends(validators.valid_user_create),
-):
-    user = await service.create_user(session, user_in)
-    await session.commit()
-    return user
-
-
-@router.get("/users/me", response_model=UserRead)
-async def get_me(current_user: CurrentUser):
-    return current_user
 
 
 @router.post("/token", response_model=TokenPair)
@@ -48,7 +32,7 @@ async def refresh_tokens(
         token: jwt.RefreshToken = Depends(validators.valid_refresh_token)
 ):
     user = await service.get_user_from_token(session, token)
-    await token.remove_from_whitelist(session)
+    await service.remove_from_whitelist(session, token)
 
     access_token = await service.create_token(
         session, token_class=jwt.AccessToken, user=user
@@ -67,12 +51,12 @@ async def logout(
         access_token: jwt.AccessToken = Depends(validators.valid_access_token),
 ):
     refresh_token = jwt.RefreshToken(token=refresh_token.refresh_token)
-    if not await refresh_token.in_whitelist(session):
+    if not await service.in_whitelist(session, refresh_token):
         raise InvalidToken()
 
     if refresh_token["sub"] != access_token["sub"]:
         raise InvalidToken()
 
-    await refresh_token.remove_from_whitelist(session)
-    await access_token.remove_from_whitelist(session)
+    await service.remove_from_whitelist(session, refresh_token)
+    await service.remove_from_whitelist(session, access_token)
     await session.commit()

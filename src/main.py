@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from src import redis
 from src.auth.router import router as auth_router
+from src.users.router import router as users_router
 from src.config import app_configs, settings, STATIC_DIR
 
 
@@ -45,5 +46,6 @@ async def healthcheck() -> dict[str, str]:
 
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+app.include_router(users_router, prefix="/users", tags=["Users"])
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

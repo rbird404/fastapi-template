@@ -32,7 +32,7 @@ class BasePermission(ABC):
         return self._request
 
 
-class PermissionsDependency:
+class PermissionsControl:
     def __init__(self, permissions_classes: tuple[Type[BasePermission]]):
         self.permissions_classes = permissions_classes
 

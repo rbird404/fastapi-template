@@ -1,4 +1,4 @@
-from src.exceptions import BadRequest, NotAuthenticated, PermissionDenied
+from src.exceptions import NotAuthenticated, PermissionDenied
 
 
 class AuthRequired(NotAuthenticated):
@@ -15,14 +15,6 @@ class InvalidToken(NotAuthenticated):
 
 class InvalidCredentials(NotAuthenticated):
     DETAIL = "Invalid credentials."
-
-
-class EmailTaken(BadRequest):
-    DETAIL = "Email is already taken."
-
-
-class UsernameTaken(BadRequest):
-    DETAIL = "Username is already taken."
 
 
 class RefreshTokenNotValid(NotAuthenticated):
