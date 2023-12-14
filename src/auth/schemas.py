@@ -1,21 +1,12 @@
-from pydantic import Field, ConfigDict
+import uuid
+from datetime import datetime
+
 from pydantic import BaseModel
 
 
 class AuthUser(BaseModel):
     username: str
-    password: str = Field(min_length=6, max_length=128)
-
-
-class UserCreate(AuthUser):
-    model_config = ConfigDict(from_attributes=True)
-
-
-class UserRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    username: str
+    password: str
 
 
 class TokenPair(BaseModel):
@@ -25,3 +16,11 @@ class TokenPair(BaseModel):
 
 class RefreshToken(BaseModel):
     refresh_token: str
+
+
+class JWTPayload(BaseModel):
+    sub: str
+    jti: uuid.UUID
+    iat: datetime
+    exp: datetime
+    token_type: str | None

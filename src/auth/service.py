@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Type
 
 from fastapi import Depends
@@ -6,40 +7,35 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.exceptions import InvalidCredentials, AuthorizationFailed, InvalidToken
-from src.auth.jwt import bearer_token
-from src.auth.schemas import UserCreate, AuthUser
-from src.auth.security import check_password, hash_password
-from src.auth.models import User
-from src.auth.tokens import Token, AccessToken
+from src.auth.models import BlacklistedToken
+from src.auth.schemas import AuthUser
+from src.users.models import User
+from src.auth.jwt import Token, AccessToken, bearer_token
 from src.database import AsyncDbSession
+from src.users.service import get_user_by_id, get_user_by_username
 
 
-async def create_user(session: AsyncSession, user_in: UserCreate, ) -> User | None:
-    user = User(**user_in.model_dump())
-    user.password = hash_password(user_in.password)
-    session.add(user)
-    return user
-
-
-async def get_user_by_id(session: AsyncSession, user_id: int) -> User | None:
-    user = await session.scalar(
-        select(User).where(User.id == user_id)
+async def in_blacklist(session: AsyncSession, token: Token) -> bool:
+    token_in_db = await session.scalar(
+        select(BlacklistedToken).where(
+            BlacklistedToken.jti == token["jti"]  # type:ignore
+        )
     )
-    return user
+    return bool(token_in_db)
 
 
-async def get_user_by_username(session: AsyncSession, username: str) -> User | None:
-    user = await session.scalar(
-        select(User).where(User.username == username)
+async def add_to_blacklist(session: AsyncSession, token: Token) -> BlacklistedToken:
+    token_obj = BlacklistedToken(
+        jti=token['jti'],
+        user_id=int(token['sub']),
+        expires_at=datetime.fromtimestamp(token['exp']),
     )
-    return user
+    session.add(token_obj)
+    return token_obj
 
 
-async def create_token(
-        session: AsyncSession, token_class: Type[Token], user: User
-) -> str:
+def create_token(token_class: Type[Token], user: User) -> str:
     token = token_class.for_user(user)
-    await token.add_to_whitelist(session)
     return str(token)
 
 
@@ -60,7 +56,7 @@ async def authenticate_user(session: AsyncSession, auth_data: AuthUser) -> User:
     if not user:
         raise InvalidCredentials()
 
-    if not check_password(auth_data.password, user.password):
+    if not user.check_password(auth_data.password):
         raise InvalidCredentials()
 
     return user
@@ -70,7 +66,7 @@ async def get_current_user(
         session: AsyncDbSession, token: HTTPAuthorizationCredentials = Depends(bearer_token),
 ) -> User:
     token = AccessToken(token=token.credentials)
-    if not await token.in_whitelist(session):
+    if await in_blacklist(session, token):
         raise InvalidToken()
 
     return await get_user_from_token(session, token)
