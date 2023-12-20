@@ -4,8 +4,8 @@ name: hackathon
 services:
   app:
     restart: always
-    build:
-      dockerfile: app.dockerfile
+    build: .
+    command: sh ./scripts/start-dev.sh
     volumes:
       - ./:/src
       - static:/src/static:mode=777
@@ -28,6 +28,21 @@ services:
       - "5432:5432"
     networks:
       my-ms:
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  worker:
+    build: .
+    command: celery -A src.celery:app worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - app
+      - redis
+      - db
 
 volumes:
   pg_data:

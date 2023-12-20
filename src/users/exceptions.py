@@ -1,4 +1,4 @@
-from src.exceptions import BadRequest
+from src.common.exceptions import BadRequest
 
 
 class EmailTaken(BadRequest):

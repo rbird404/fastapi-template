@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import Field, ConfigDict
+from src.common.schemas import BaseSchema
 
 
-class UserBase(BaseModel):
+class UserBase(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
-
     username: str
 
 

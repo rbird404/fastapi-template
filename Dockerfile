@@ -25,5 +25,3 @@ RUN chmod 777 -R /src/static
 
 WORKDIR /src
 USER app
-
-ENTRYPOINT ["sh", "./scripts/start-dev.sh"]
