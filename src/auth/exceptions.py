@@ -1,4 +1,4 @@
-from src.exceptions import NotAuthenticated, PermissionDenied
+from src.common.exceptions import NotAuthenticated, PermissionDenied
 
 
 class AuthRequired(NotAuthenticated):
@@ -15,7 +15,3 @@ class InvalidToken(NotAuthenticated):
 
 class InvalidCredentials(NotAuthenticated):
     DETAIL = "Invalid credentials."
-
-
-class RefreshTokenNotValid(NotAuthenticated):
-    DETAIL = "Refresh token is not valid."

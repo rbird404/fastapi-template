@@ -28,6 +28,7 @@ async def lifespan(_application: FastAPI) -> AsyncGenerator:
     # Shutdown
     await pool.disconnect()
 
+
 app = FastAPI(**app_configs, lifespan=lifespan)
 
 app.add_middleware(
