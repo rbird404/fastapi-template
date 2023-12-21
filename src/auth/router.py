@@ -1,28 +1,28 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-from src.auth import jwt
-from src.auth.schemas import TokenPair, AuthUser, RefreshToken
+from src.auth.schemas import AuthUser, RefreshToken, TokenResponse
 from src.auth.use_case import CreateTokenPair, UserLogout, RefreshTokenPair
+from src.common.schemas import DefaultResponse
 
 router = APIRouter()
 
 
-@router.post("/token", response_model=TokenPair)
+@router.post("/token", response_model=TokenResponse)
 async def token_obtain_pair(
-        auth_data: AuthUser, use_case: CreateTokenPair,
+        auth_data: AuthUser, use_case: CreateTokenPair = Depends(),
 ):
     return await use_case(auth_data)
 
 
-@router.post("/token/refresh", response_model=TokenPair)
+@router.post("/token/refresh", response_model=TokenResponse)
 async def refresh_tokens(
-        use_case: RefreshTokenPair, token: jwt.RefreshToken
+        refresh_token: RefreshToken, use_case: RefreshTokenPair = Depends(),
 ):
-    return await use_case(token)
+    return await use_case(refresh_token.refresh_token)
 
 
-@router.post("/token/logout")
+@router.post("/token/logout", response_model=DefaultResponse)
 async def logout(
-        use_case: UserLogout, refresh_token: RefreshToken,
+        refresh_token: RefreshToken, use_case: UserLogout = Depends(),
 ):
     return await use_case(refresh_token.refresh_token)

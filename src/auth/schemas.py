@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from src.common.schemas import BaseSchema
+from src.common.schemas import BaseSchema, DefaultResponse
 
 
 class AuthUser(BaseSchema):
@@ -24,3 +24,8 @@ class JWTPayload(BaseSchema):
     iat: datetime
     exp: datetime
     token_type: str | None
+
+
+class TokenResponse(DefaultResponse):
+    status: bool = True
+    details: TokenPair

@@ -1,20 +1,19 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi import status
 
-from src.auth.service import CurrentUser
-from src.users.schemas import UserRead, UserCreate
-from src.users.use_case import CreateUser
+from src.users.schemas import UserCreate, UserResponse
+from src.users.use_case import CreateUser, GetCurrentUser
 
 router = APIRouter()
 
 
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=UserRead)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
 async def register_user(
-        use_case: CreateUser, user_in: UserCreate,
+        user_in: UserCreate, use_case: CreateUser = Depends(),
 ):
     return await use_case(user_in)
 
 
-@router.get("/me", status_code=status.HTTP_200_OK, response_model=UserRead)
-async def get_me(current_user: CurrentUser):
-    return current_user
+@router.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponse)
+async def get_me(use_case: GetCurrentUser = Depends()):
+    return use_case()

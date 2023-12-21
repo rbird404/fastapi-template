@@ -1,5 +1,5 @@
 from pydantic import Field, ConfigDict
-from src.common.schemas import BaseSchema
+from src.common.schemas import BaseSchema, DefaultResponse
 
 
 class UserBase(BaseSchema):
@@ -13,3 +13,8 @@ class UserCreate(UserBase):
 
 class UserRead(UserBase):
     id: int
+
+
+class UserResponse(DefaultResponse):
+    status: bool = True
+    details: UserRead

@@ -1,14 +1,20 @@
-from abc import abstractmethod
-
+from abc import abstractmethod, ABC
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import AsyncDbSession
 
 
-class BaseAsyncUseCase:
+class BaseUseCase(ABC):
+    @abstractmethod
+    def __call__(self, *args, **kwargs):
+        ...
+
+
+class BaseAsyncUseCase(BaseUseCase, ABC):
     def __init__(self, session: AsyncDbSession):
         self._session = session
 
     @property
-    def session(self):
+    def session(self) -> AsyncSession:
         return self._session
 
     @abstractmethod
