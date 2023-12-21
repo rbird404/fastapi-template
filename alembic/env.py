@@ -7,7 +7,11 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from src.database import DATABASE_URL, Base
+
+from src.database import Base
+from src.config import settings
+
+DATABASE_URL = settings.get_db_url()
 
 # Import models
 for root, dirs, files in os.walk("src"):

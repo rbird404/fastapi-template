@@ -1,13 +1,18 @@
 from pathlib import Path
 from typing import Any
-from pydantic import PostgresDsn, RedisDsn
+from pydantic import RedisDsn
 from pydantic_settings import BaseSettings
 
 from src.constants import Environment
 
 
 class Config(BaseSettings):
-    DATABASE_URL: PostgresDsn
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
+
     REDIS_URL: RedisDsn
 
     CELERY_BROKER_URL: RedisDsn
@@ -24,6 +29,17 @@ class Config(BaseSettings):
     CORS_HEADERS: list[str]
 
     APP_VERSION: str = "1"
+
+    def get_db_url(self, *, async_: bool = True) -> str:
+        if async_:
+            return (
+                f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+                f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+            )
+        return (
+            f"postgresql+psycopg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+            f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
 
 
 settings = Config()

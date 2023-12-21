@@ -1,9 +1,8 @@
-version: '3.7'
+version: '3.8'
 name: hackathon
 
 services:
   app:
-    restart: always
     build: .
     command: sh ./scripts/start-dev.sh
     volumes:
@@ -33,16 +32,49 @@ services:
     image: redis:7
     ports:
       - "6379:6379"
+    networks:
+      my-ms:
 
   worker:
     build: .
-    command: celery -A src.celery:app worker --loglevel=info
+    volumes:
+      - ./:/src
+    command: celery -A src.celery worker --loglevel=info
     env_file:
       - .env
     depends_on:
-      - app
-      - redis
       - db
+      - redis
+    networks:
+      my-ms:
+
+  flower:
+    build: .
+    volumes:
+      - ./:/src
+    command: celery -A src.celery flower
+    env_file:
+      - .env
+    ports:
+      - "5555:5555"
+    depends_on:
+      - db
+      - redis
+    networks:
+      my-ms:
+
+  beat:
+    build: .
+    command: celery -A src.celery beat --loglevel=info
+    volumes:
+      - ./:/src
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      my-ms:
 
 volumes:
   pg_data:

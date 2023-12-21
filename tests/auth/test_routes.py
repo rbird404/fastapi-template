@@ -1,7 +1,8 @@
 import pytest
 from async_asgi_testclient import TestClient
 from fastapi import status
-from src.auth.exceptions import UsernameTaken
+
+from src.users.exceptions import UsernameTaken
 
 
 @pytest.mark.asyncio
@@ -21,7 +22,7 @@ async def test_register(client: TestClient) -> None:
 
 @pytest.mark.asyncio
 async def test_register_username_taken(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
-    from src.auth.dependencies import service
+    from src.auth import service
 
     async def fake_getter(*args, **kwargs):
         return True

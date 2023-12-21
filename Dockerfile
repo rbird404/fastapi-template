@@ -17,7 +17,7 @@ RUN poetry install --only main
 COPY . ./src
 ENV PATH "$PATH:/src/scripts"
 
-RUN useradd -m -d /src -s /bin/bash app \
+RUN useradd -m -d /src -s /bin/bash app  \
     && chown -R app:app /src/* && chmod +x /src/scripts/*
 
 RUN mkdir -p /src/static
