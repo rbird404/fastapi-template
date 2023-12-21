@@ -19,5 +19,5 @@ class GetCurrentUser(BaseUseCase):
     def __init__(self, current_user: CurrentUser):
         self.user = current_user
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> UserResponse:
         return UserResponse(msg="Current user successfully obtained.", details=self.user)

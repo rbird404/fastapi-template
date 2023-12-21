@@ -1,5 +1,7 @@
 from abc import abstractmethod, ABC
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.common.schemas import DefaultResponse
 from src.database import AsyncDbSession
 
 
@@ -18,5 +20,5 @@ class BaseAsyncUseCase(BaseUseCase, ABC):
         return self._session
 
     @abstractmethod
-    async def __call__(self, *args, **kwargs):
+    async def __call__(self, *args, **kwargs) -> DefaultResponse:
         ...
