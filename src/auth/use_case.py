@@ -18,6 +18,10 @@ class RefreshTokenPair(BaseAsyncUseCase):
     async def __call__(self, refresh_token: str) -> TokenResponse:
         token = jwt.RefreshToken(refresh_token)
         user = await service.get_user_from_token(self.session, token)
+
+        if await service.in_blacklist(self.session, token):
+            raise InvalidToken()
+
         await service.add_to_blacklist(self.session, token)
         await self.session.commit()
 
