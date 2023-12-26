@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Generator, AsyncGenerator
+from typing import Generator, AsyncGenerator
 
 import pytest
 import pytest_asyncio

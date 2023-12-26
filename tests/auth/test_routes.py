@@ -6,9 +6,9 @@ from src.users.exceptions import UsernameTaken
 
 
 @pytest.mark.asyncio
-async def test_register(client: TestClient) -> None:
+async def test_register_user(client: TestClient) -> None:
     resp = await client.post(
-        "/auth/users",
+        "/users",
         json={
             "username": "test_user",
             "password": "123Aa!",
@@ -17,7 +17,7 @@ async def test_register(client: TestClient) -> None:
     resp_json = resp.json()
 
     assert resp.status_code == status.HTTP_201_CREATED
-    assert resp_json["username"] == "test_user"
+    assert resp_json["details"]["username"] == "test_user"
 
 
 @pytest.mark.asyncio
@@ -30,7 +30,7 @@ async def test_register_username_taken(client: TestClient, monkeypatch: pytest.M
     monkeypatch.setattr(service, "get_user_by_username", fake_getter)
 
     resp = await client.post(
-        "/auth/users",
+        "/users",
         json={
             "username": "test_user",
             "password": "123Aa!",
@@ -39,7 +39,7 @@ async def test_register_username_taken(client: TestClient, monkeypatch: pytest.M
     resp_json = resp.json()
 
     assert resp.status_code == status.HTTP_400_BAD_REQUEST
-    assert resp_json["detail"] == UsernameTaken.DETAIL
+    assert resp_json["msg"] == UsernameTaken.DETAIL
 
 
 @pytest.mark.asyncio
@@ -53,10 +53,10 @@ async def test_user_login(client: TestClient) -> None:
     )
 
     resp_json = resp.json()
-    access_token = resp_json["access_token"]
+    access_token = resp_json["details"]["access_token"]
 
     resp = await client.get(
-        "/auth/users/me",
+        "/users/me",
         headers={
             "Authorization": f"Bearer {access_token}"
         }
@@ -64,7 +64,7 @@ async def test_user_login(client: TestClient) -> None:
     resp_json = resp.json()
 
     assert resp.status_code == status.HTTP_200_OK
-    assert resp_json["username"] == "test_user"
+    assert resp_json["details"]["username"] == "test_user"
 
 
 @pytest.mark.asyncio
@@ -78,7 +78,7 @@ async def test_blocked_refresh_token_after_refresh(client: TestClient) -> None:
     )
 
     resp_json = resp.json()
-    refresh_token = resp_json["refresh_token"]
+    refresh_token = resp_json["details"]["refresh_token"]
 
     resp = await client.post(
         "/auth/token/refresh",
@@ -110,8 +110,8 @@ async def test_user_logout(client: TestClient) -> None:
     )
 
     resp_json = resp.json()
-    access_token = resp_json["access_token"]
-    refresh_token = resp_json["refresh_token"]
+    access_token = resp_json["details"]["access_token"]
+    refresh_token = resp_json["details"]["refresh_token"]
 
     resp = await client.post(
         "/auth/token/logout",
