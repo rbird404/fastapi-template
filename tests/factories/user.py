@@ -17,4 +17,5 @@ class UserFactory(BaseFactory):
     @classmethod
     def get_credentials(cls, user: User):
         from src.auth.service import create_token
+
         return f"Bearer {create_token(AccessToken, user)}"

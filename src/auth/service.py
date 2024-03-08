@@ -26,9 +26,9 @@ async def in_blacklist(session: AsyncSession, token: Token) -> bool:
 
 async def add_to_blacklist(session: AsyncSession, token: Token) -> BlacklistedToken:
     token_obj = BlacklistedToken(
-        jti=token['jti'],
-        user_id=int(token['sub']),
-        expires_at=datetime.fromtimestamp(token['exp']),
+        jti=token["jti"],
+        user_id=int(token["sub"]),
+        expires_at=datetime.fromtimestamp(token["exp"]),
     )
     session.add(token_obj)
     return token_obj
@@ -41,7 +41,7 @@ def create_token(token_class: Type[Token], user: User) -> str:
 
 async def get_user_from_token(session: AsyncSession, token: Token) -> User:
     try:
-        user = await get_user_by_id(session, int(token['sub']))
+        user = await get_user_by_id(session, int(token["sub"]))
     except (KeyError, ValueError):
         raise InvalidToken()
 
@@ -63,7 +63,8 @@ async def authenticate_user(session: AsyncSession, auth_data: AuthUser) -> User:
 
 
 async def get_current_user(
-        session: AsyncDbSession, token: HTTPAuthorizationCredentials = Depends(bearer_token),
+    session: AsyncDbSession,
+    token: HTTPAuthorizationCredentials = Depends(bearer_token),
 ) -> User:
     token = AccessToken(token=token.credentials)
     if await in_blacklist(session, token):

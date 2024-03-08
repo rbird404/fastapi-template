@@ -9,10 +9,8 @@ from src.database import AsyncDbSession
 
 
 class BasePermission(ABC):
-
     @abstractmethod
-    async def has_required_permissions(self) -> bool:
-        ...
+    async def has_required_permissions(self) -> bool: ...
 
     def __init__(self, request: Request, session: AsyncSession):
         self.user_id: int | None = None
@@ -21,7 +19,7 @@ class BasePermission(ABC):
 
         if bearer_token := request.headers.get("authorization"):
             token = AccessToken(bearer_token[7:])
-            self.user_id = int(token['sub'])
+            self.user_id = int(token["sub"])
 
     @property
     def session(self) -> AsyncSession:

@@ -7,8 +7,7 @@ from src.database import AsyncDbSession
 
 class BaseUseCase(ABC):
     @abstractmethod
-    def __call__(self, *args, **kwargs):
-        ...
+    def __call__(self, *args, **kwargs): ...
 
 
 class BaseAsyncUseCase(BaseUseCase, ABC):
@@ -20,5 +19,4 @@ class BaseAsyncUseCase(BaseUseCase, ABC):
         return self._session
 
     @abstractmethod
-    async def __call__(self, *args, **kwargs) -> DefaultResponse:
-        ...
+    async def __call__(self, *args, **kwargs) -> DefaultResponse: ...

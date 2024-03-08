@@ -9,10 +9,6 @@ app: Celery = Celery(
     backend=settings.CELERY_RESULT_BACKEND,
 )
 
-app.autodiscover_tasks(
-    ['src.auth']
-)
+app.autodiscover_tasks(["src.auth"])
 
-app.conf.beat_schedule = {
-    **auth_task_settings
-}
+app.conf.beat_schedule = {**auth_task_settings}

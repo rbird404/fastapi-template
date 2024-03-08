@@ -30,7 +30,7 @@ class Config(BaseSettings):
 
     APP_VERSION: str = "1"
 
-    model_config = SettingsConfigDict(env_file=".env", extra='ignore')
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     def get_db_url(self, *, async_: bool = True) -> str:
         url = "postgresql+psycopg://{}:{}@{}:{}/{}"
@@ -42,7 +42,7 @@ class Config(BaseSettings):
             self.POSTGRES_PASSWORD,
             self.POSTGRES_HOST,
             self.POSTGRES_PORT,
-            self.POSTGRES_DB
+            self.POSTGRES_DB,
         )
         return url
 

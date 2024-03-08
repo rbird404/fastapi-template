@@ -53,12 +53,7 @@ async def test_user_login(client: TestClient) -> None:
     resp_json = resp.json()
     access_token = resp_json["details"]["access_token"]
 
-    resp = client.get(
-        "/users/me",
-        headers={
-            "Authorization": f"Bearer {access_token}"
-        }
-    )
+    resp = client.get("/users/me", headers={"Authorization": f"Bearer {access_token}"})
     resp_json = resp.json()
 
     assert resp.status_code == status.HTTP_200_OK
@@ -121,12 +116,10 @@ async def test_user_logout(client) -> None:
 
     resp = client.post(
         "/auth/token/logout",
-        headers={
-            "Authorization": f"Bearer {access_token}"
-        },
+        headers={"Authorization": f"Bearer {access_token}"},
         json={
             "refresh_token": refresh_token,
-        }
+        },
     )
 
     assert resp.status_code == status.HTTP_200_OK

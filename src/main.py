@@ -30,13 +30,7 @@ async def healthcheck() -> dict[str, str]:
 async def http_exception_handler(request, exc):
     return JSONResponse(
         status_code=exc.status_code,
-        content=jsonable_encoder(
-            {
-                "status": False,
-                "msg": exc.detail,
-                "details": {}
-            }
-        ),
+        content=jsonable_encoder({"status": False, "msg": exc.detail}),
     )
 
 

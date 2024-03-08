@@ -42,9 +42,7 @@ def migrations(settings) -> None:
 
 @pytest_asyncio.fixture
 async def db_session(migrations, settings) -> AsyncSession:
-    async_engine = create_async_engine(
-        settings.get_db_url(async_=True), echo=False
-    )
+    async_engine = create_async_engine(settings.get_db_url(async_=True), echo=False)
 
     async_session = async_sessionmaker(
         bind=async_engine,
@@ -62,9 +60,7 @@ async def db_session(migrations, settings) -> AsyncSession:
 
 @pytest.fixture
 def db_sync_session(migrations, settings) -> AsyncSession:
-    sync_engine = create_engine(
-        settings.get_db_url(async_=False), echo=False
-    )
+    sync_engine = create_engine(settings.get_db_url(async_=False), echo=False)
 
     sync_session = sessionmaker(
         bind=sync_engine,

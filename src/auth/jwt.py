@@ -20,7 +20,9 @@ def encode(payload: dict) -> str:
 def decode(token: str, verify=True) -> dict:
     if verify:
         try:
-            return jwt.decode(token, auth_config.JWT_SECRET, algorithms=[auth_config.JWT_ALG])
+            return jwt.decode(
+                token, auth_config.JWT_SECRET, algorithms=[auth_config.JWT_ALG]
+            )
         except JWTError:
             raise InvalidToken()
 

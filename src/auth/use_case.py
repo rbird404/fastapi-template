@@ -25,12 +25,8 @@ class RefreshTokenPair(BaseAsyncUseCase):
         await service.add_to_blacklist(self.session, token)
         await self.session.commit()
 
-        access_token = service.create_token(
-            token_class=jwt.AccessToken, user=user
-        )
-        refresh_token = service.create_token(
-            token_class=jwt.RefreshToken, user=user
-        )
+        access_token = service.create_token(token_class=jwt.AccessToken, user=user)
+        refresh_token = service.create_token(token_class=jwt.RefreshToken, user=user)
 
         details = {"access_token": access_token, "refresh_token": refresh_token}
         return TokenResponse(msg="Tokens updated successfully.", details=details)

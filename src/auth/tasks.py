@@ -18,8 +18,8 @@ def remove_expired_tokens():
 
 
 task_settings = {
-    'remove-expired-tokens-every-week': {
-        'task': 'src.auth.tasks.remove_expired_tokens',
-        'schedule': timedelta(weeks=1),
+    "remove-expired-tokens-every-week": {
+        "task": "src.auth.tasks.remove_expired_tokens",
+        "schedule": timedelta(weeks=1),
     }
 }
