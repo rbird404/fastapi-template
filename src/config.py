@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 from pydantic import RedisDsn
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.constants import Environment
 
@@ -30,16 +30,21 @@ class Config(BaseSettings):
 
     APP_VERSION: str = "1"
 
+    model_config = SettingsConfigDict(env_file=".env", extra='ignore')
+
     def get_db_url(self, *, async_: bool = True) -> str:
+        url = "postgresql+psycopg://{}:{}@{}:{}/{}"
         if async_:
-            return (
-                f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-                f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-            )
-        return (
-            f"postgresql+psycopg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-            f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+            url = "postgresql+asyncpg://{}:{}@{}:{}/{}"
+
+        url = url.format(
+            self.POSTGRES_USER,
+            self.POSTGRES_PASSWORD,
+            self.POSTGRES_HOST,
+            self.POSTGRES_PORT,
+            self.POSTGRES_DB
         )
+        return url
 
 
 settings = Config()

@@ -1,0 +1,32 @@
+fastapi==0.109.0
+sqlalchemy==2.0.25
+uvicorn[standard]==0.27.0
+python-jose==3.3.0
+alembic==1.13.1
+pydantic[email]==2.6.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+pydantic-settings==2.1.0
+httpx==0.27.0
+
+celery==5.3.6
+flower==2.0.1
+
+# Drivers
+asyncpg==0.29.0
+psycopg==3.1.16
+asyncmy==0.2.9
+asynch==0.2.3
+redis==5.0.1
+
+# Tools
+pip-tools==7.3.0
+pre-commit==3.6.0
+
+# Tests
+pytest==7.4.4
+pytest-asyncio==0.23.4
+async-asgi-testclient==1.4.11
+testcontainers==3.7.1
+testcontainers-postgres==0.0.1rc1
+factory-boy==3.3.0
